@@ -18,10 +18,12 @@ public class PaymentTransaction {
     @ManyToOne
     @JoinColumn(name = "payment_id")
     private Payment payment;
+
     @Column(unique = true)
     private String transactionId;
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
+
     private BigDecimal amount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

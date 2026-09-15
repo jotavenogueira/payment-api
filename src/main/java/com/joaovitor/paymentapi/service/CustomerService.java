@@ -1,10 +1,8 @@
 package com.joaovitor.paymentapi.service;
-
 import com.joaovitor.paymentapi.entity.Customer;
 import com.joaovitor.paymentapi.exception.CustomerNotFoundException;
 import com.joaovitor.paymentapi.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
