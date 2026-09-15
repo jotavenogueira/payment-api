@@ -5,6 +5,8 @@ import com.joaovitor.paymentapi.entity.Customer;
 import com.joaovitor.paymentapi.entity.Payment;
 import com.joaovitor.paymentapi.entity.PaymentTransaction;
 import com.joaovitor.paymentapi.enums.TransactionStatus;
+import com.joaovitor.paymentapi.exception.CustomerNotFoundException;
+import com.joaovitor.paymentapi.repository.CustomerRepository;
 import com.joaovitor.paymentapi.repository.PaymentTransactionRepository;
 import com.joaovitor.paymentapi.enums.PaymentStatus;
 import com.joaovitor.paymentapi.exception.InvalidPaymentStatusException;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,14 +26,22 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final CustomerService customerService;
     private final PaymentTransactionRepository transactionRepository;
+    private final CustomerRepository customerRepository;
 
     public PaymentService(
             PaymentRepository paymentRepository,
             CustomerService customerService,
-            PaymentTransactionRepository transactionRepository) {
+            PaymentTransactionRepository transactionRepository, CustomerRepository customerRepository) {
         this.paymentRepository = paymentRepository;
         this.customerService = customerService;
         this.transactionRepository = transactionRepository;
+        this.customerRepository = customerRepository;
+    }
+    private Customer verifyCustomerId(Customer customerId){
+        if(!customerRepository.existsById(customerId.getId())){
+                throw new CustomerNotFoundException(customerId.getId());
+        }
+        return customerId;
     }
 
     @Transactional
@@ -39,7 +50,7 @@ public class PaymentService {
         LocalDateTime now = LocalDateTime.now();
 
         Payment payment = new Payment();
-        payment.setCustomer(customer);
+        payment.setCustomer(verifyCustomerId(customer));
         payment.setAmount(request.amount());
         payment.setCurrency(request.currency());
         payment.setPaymentMethod(request.paymentMethod());
